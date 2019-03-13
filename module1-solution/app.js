@@ -7,38 +7,52 @@ angular.module('LunchApp', [])
 LunchController.$inject = ['$scope'];
 function LunchController($scope) {
   $scope.lunch = "";
-  $scope.message = "hello";
-
+  $scope.message = "";
+  $scope.colorId = "normal";
 
   $scope.checkLunch = function checkLunch() {
     if(checkInputField()){
       var lunchArray = splitArray($scope.lunch);
-      if(lunchArray.length >1){
-        console.log(lunchArray.length);
-        console.log('Greater than 0');
+      var withoutEmptyStrings = checkForEmpty(lunchArray);
+      // console.log("withoutEmptyStrings: " + withoutEmptyStrings );
+      if(withoutEmptyStrings > 0 && withoutEmptyStrings <= 3){
+        $scope.message = "Enjoy!";
+        // console.log('Greater than 0');
+        $scope.colorId = "validData";
+      }
+      else if(withoutEmptyStrings > 3){
+        $scope.message = "Too much!";
+        $scope.colorId = "validData";
       }
     };
   }
 
+  function checkForEmpty(array){
+    var withoutEmptyStrings = array.length;
+    for(var i=0;i<array.length;i++){
+       if(array[i] == "")
+          withoutEmptyStrings--;
+        }
+      return withoutEmptyStrings;
+  }
+  
   function checkInputField(){
-    //strip the white space from the input string
-    var inputString = $scope.lunch.replace(/\s/g, '');
-    console.log("stripped string " + inputString);
-    if(inputString == ""){
+    console.log($scope.lunch);
+    if($scope.lunch === ""){
         $scope.message = "Please enter data first.";
+        $scope.colorId = "enterData";
         return false;
     }
-    else{ return true; }
-
-
+    else{
+      // console.log("checkInputField true");
+      return true;
+    }
   }
+
   function splitArray(array){
     var words = array.split(',');
     console.log(words);
     return words;
-    // expected output: "fox"
   };
-
 }
-
 })();

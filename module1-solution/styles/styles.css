@@ -1,0 +1,12 @@
+#validData {
+  border-style: solid;
+  border-color: green;
+  color: green;
+  padding: 4px;
+}
+#enterData {
+  border-style: solid;
+  border-color: red;
+  color: red;
+  padding: 4px;
+}
