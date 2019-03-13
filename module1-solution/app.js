@@ -14,7 +14,7 @@ function LunchController($scope) {
     if(checkInputField()){
       var lunchArray = splitArray($scope.lunch);
       var withoutEmptyStrings = checkForEmpty(lunchArray);
-      // console.log("withoutEmptyStrings: " + withoutEmptyStrings );
+      console.log("withoutEmptyStrings: " + withoutEmptyStrings );
       if(withoutEmptyStrings > 0 && withoutEmptyStrings <= 3){
         $scope.message = "Enjoy!";
         // console.log('Greater than 0');
@@ -30,14 +30,15 @@ function LunchController($scope) {
   function checkForEmpty(array){
     var withoutEmptyStrings = array.length;
     for(var i=0;i<array.length;i++){
-       if(array[i] == "")
+      // strip white space from string
+       if(array[i].replace(/^\s+|\s+$/g, '') == "")
           withoutEmptyStrings--;
         }
       return withoutEmptyStrings;
   }
-  
+
   function checkInputField(){
-    console.log($scope.lunch);
+    // console.log($scope.lunch);
     if($scope.lunch === ""){
         $scope.message = "Please enter data first.";
         $scope.colorId = "enterData";
@@ -51,7 +52,7 @@ function LunchController($scope) {
 
   function splitArray(array){
     var words = array.split(',');
-    console.log(words);
+    // console.log(words);
     return words;
   };
 }
