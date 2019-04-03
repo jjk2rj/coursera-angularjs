@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" ng-app='ShoppingListCheckOff'>
+  <head>
+    <title>Lunch Checker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="angular.min.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/styles.css">
+  </head>
+  <body >
+    
+    <!-- To Buy List -->
+    <div id="toBuy" class="col-md-6"  ng-controller='ToBuyController as toBuy'>
+      <h2>To Buy:</h2>
+      <ul>
+        <li ng-repeat="item in toBuy.list">
+          Buy  <input type="text" ng-model="item.quantity"> of {{ item.name }}
+          <!-- Buy  <input type="text" placeholder="{{item.quantity}}"> of {{ item.name }} -->
+          <button ng-click="toBuy.removeItem($index)">Bought</button>
+        </ul>
+        <div ng-if="toBuy.list.length == 0" class="emptyMessage">Everything is bought!</div>
+    </div>
+
+    <!-- Already Bought List -->
+    <div id="alreadyBought" class="col-md-6" ng-controller='AlreadyBoughtController as alreadyBought'>
+      <h2>Already Bought:</h2>
+      <ul>
+          <li ng-repeat="item in alreadyBought.list">
+            Bought {{ item.quantity }} of {{ item.name }} for total price of  {{ alreadyBought.useDollaFilter() }}{{alreadyBought.getTotalPrice($index)}} 
+            <!-- Bought {{ item.quantity }} of {{ item.name }} for total price of $ {{ $index }} -->
+      </ul>
+      <div ng-if="alreadyBought.list.length == 0" class="emptyMessage">Nothing bought yet.</div>
+    </div>    
+  </body>
+</html>
