@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="styles/styles.css">
   </head>
 <body>
-   <div class="container">
+   <div class="container" ng-controller='NarrowItDownController as controller'>
+
     <h1>Narrow Down Your Chinese Menu Choice</h1>
 
     <div class="form-group">
       <input type="text" placeholder="search term" class="form-control">
     </div>
     <div class="form-group narrow-button">
-      <button class="btn btn-primary">Narrow It Down For Me!</button>
+      <button class="btn btn-primary" ng-click="controller.getMenuItems();">Narrow It Down For Me!</button>
     </div>
 
     <!-- found-items should be implemented as a component -->

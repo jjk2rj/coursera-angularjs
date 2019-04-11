@@ -1,153 +1,73 @@
 (function () {
 'use strict';
 
-angular.module('ShoppingListDirectiveApp', [])
-.controller('ShoppingListController', ShoppingListController)
-.factory('ShoppingListFactory', ShoppingListFactory)
-.directive('shoppingList', ShoppingListDirective);
-
-
-function ShoppingListDirective() {
-  var ddo = {
-    templateUrl: 'shoppingList.html',
-    scope: {
-      items: '<',
-      myTitle: '@title',
-      onRemove: '&'
-    },
-    controller: ShoppingListDirectiveController,
-    controllerAs: 'list',
-    bindToController: true,
-    link: ShoppingListDirectiveLink
-  };
-
-  return ddo;
-}
-
-
-function ShoppingListDirectiveLink(scope, element, attrs, controller) {
-  console.log("Link scope is: ", scope);
-  console.log("Controller instance is: ", controller);
-  console.log("Element is: ", element);
-
-  scope.$watch('list.cookiesInList()', function (newValue, oldValue) {
-    console.log("Old value: ", oldValue);
-    console.log("New value: ", newValue);
-
-    if (newValue === true) {
-      displayCookieWarning();
-    }
-    else {
-      removeCookieWarning();
-    }
-
-  });
-
-  function displayCookieWarning() {
-    // Using Angluar jqLite
-    // var warningElem = element.find("div");
-    // console.log(warningElem);
-    // warningElem.css('display', 'block');
-
-    // If jQuery included before Angluar
-    var warningElem = element.find("div.error");
-    warningElem.slideDown(900);
-  }
-
-
-  function removeCookieWarning() {
-    // Using Angluar jqLite
-    // var warningElem = element.find("div");
-    // warningElem.css('display', 'none');
-
-    // If jQuery included before Angluar
-    var warningElem = element.find("div.error");
-    warningElem.slideUp(900);
-  }
-}
-
-
-function ShoppingListDirectiveController() {
-  var list = this;
-
-  list.cookiesInList = function () {
-    for (var i = 0; i < list.items.length; i++) {
-      var name = list.items[i].name;
-      if (name.toLowerCase().indexOf("cookie") !== -1) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-}
-
-
-ShoppingListController.$inject = ['ShoppingListFactory'];
-function ShoppingListController(ShoppingListFactory) {
-  var viewList = this;
-
-  // Use factory to create new shopping list service
-  var shoppingList = ShoppingListFactory();
-
-  viewList.items = shoppingList.getItems();
-  var origTitle = "Shopping List #1";
-  viewList.title = origTitle + " (" + viewList.items.length + " items )";
-
-  viewList.itemName = "";
-  viewList.itemQuantity = "";
-
-  viewList.addItem = function () {
-    shoppingList.addItem(viewList.itemName, viewList.itemQuantity);
-    viewList.title = origTitle + " (" + viewList.items.length + " items )";
-  };
-
-  viewList.removeItem = function (itemIndex) {
-    console.log("'this' is: ", this);
-    this.lastRemoved = "Last item removed was " + this.items[itemIndex].name;
-    shoppingList.removeItem(itemIndex);
-    this.title = origTitle + " (" + viewList.items.length + " items )";
-  };
-}
-
-
-// If not specified, maxItems assumed unlimited
-function ShoppingListService(maxItems) {
-  var service = this;
-
-  // List of shopping items
-  var items = [];
-
-  service.addItem = function (itemName, quantity) {
-    if ((maxItems === undefined) ||
-        (maxItems !== undefined) && (items.length < maxItems)) {
-      var item = {
-        name: itemName,
-        quantity: quantity
-      };
-      items.push(item);
-    }
-    else {
-      throw new Error("Max items (" + maxItems + ") reached.");
-    }
-  };
-
-  service.removeItem = function (itemIndex) {
-    items.splice(itemIndex, 1);
-  };
-
-  service.getItems = function () {
-    return items;
-  };
-}
-
-
-function ShoppingListFactory() {
-  var factory = function (maxItems) {
-    return new ShoppingListService(maxItems);
-  };
-
-  return factory;
-}
+angular.module('NarrowItDownApp', []))
+.controller('NarrowItDownController', NarrowItDownController)
+.service('MenuSearchService', MenuSearchService)
+.constant('ApiBasePath', "https://davids-restaurant.herokuapp.com");
 
 })();
+
+
+NarrowItDownController.$inject = ['MenuSearchService'];
+function NarrowItDownController (MenuSearchService) {
+  var controller = this;
+
+  var promise = MenuSearchService.getMenuItems();
+
+  promise.then(function (response) {
+    controller.resp = response.data;
+  })
+  .catch(function (error) {
+    console.log("Something went terribly wrong.");
+  });
+}
+
+MenuSearchService.$inject = ['$http', 'ApiBasePath'];
+fucntion MenuSearchService(){
+  var service = this;
+
+  service.getMenuItems = function () {
+    console.log("inside getMenuItems");
+    var response = $http({
+      method: "GET",
+      url: (ApiBasePath + "/menu")
+    });
+    return response;
+    console.log("response returned");
+  };
+
+  // service.getMatchedMenuItems(searchTerm){
+  // };
+}
+/*
+Declare and create MenuSearchService. The service should have the following method:
+getMatchedMenuItems(searchTerm). That method will be responsible for reaching out to the server
+(using the $http service) to retrieve the list of all the menu items. Once it gets all the menu items,
+it should loop through them to pick out the ones whose description matches the searchTerm.
+Once a list of found items is compiled, it should return that list (wrapped in a promise).
+Remember that the then function itself returns a promise. Your method would roughly look like this:
+    return $http(...).then(function (result) {
+    // process result and only keep items that match
+    var foundItems...
+
+    // return processed items
+    return foundItems;
+  });
+
+The NarrowItDownController should be injected with the MenuSearchService. The
+controller should call the getMatchedMenuItems method when appropriate and store
+the result in a property called found attached to the controller instance.
+
+Declare and create foundItems directive. The list should be displayed using this
+directive which takes the found array of items specified on it as an attribute
+(think one-way binding with '<'). To implement the functionality of the
+"Don't want this one!" button, the directive should also provide an on-remove
+attribute that will use function reference binding to invoke the parent controller
+removal an item from the found array based on an index into the found array.
+The index should be passed in from the directive to the controller. (Note that we
+implemented almost identical type of behavior in the Lecture 30 Part 2, so as long
+as you understood that code, it should be very close to copy/paste). In the NarrowItDownController,
+simply remove that item from the found array. You can do that using the Array's splice() method.
+For example, to remove an item with the index of 3 from the found array, you would call found.splice(3, 1);.
+*/
