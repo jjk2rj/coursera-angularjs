@@ -1,22 +1,22 @@
 (function () {
 'use strict';
 
-angular.module('NarrowItDownApp', []))
+angular.module('NarrowItDownApp', [])
 .controller('NarrowItDownController', NarrowItDownController)
 .service('MenuSearchService', MenuSearchService)
 .constant('ApiBasePath', "https://davids-restaurant.herokuapp.com");
-
-})();
 
 
 NarrowItDownController.$inject = ['MenuSearchService'];
 function NarrowItDownController (MenuSearchService) {
   var controller = this;
 
-  var promise = MenuSearchService.getMenuItems();
+  var promise = MenuSearchService.getMatchedMenuItems("bean");
 
+  // console.log(controller.matchedItemsArray);
   promise.then(function (response) {
-    controller.resp = response.data;
+    console.log(response);
+    controller.resp = response;
   })
   .catch(function (error) {
     console.log("Something went terribly wrong.");
@@ -24,21 +24,41 @@ function NarrowItDownController (MenuSearchService) {
 }
 
 MenuSearchService.$inject = ['$http', 'ApiBasePath'];
-fucntion MenuSearchService(){
+function MenuSearchService($http, ApiBasePath){
   var service = this;
 
-  service.getMenuItems = function () {
-    console.log("inside getMenuItems");
-    var response = $http({
-      method: "GET",
-      url: (ApiBasePath + "/menu")
-    });
-    return response;
-    console.log("response returned");
-  };
+  service.getMatchedMenuItems = function (searchTerm) {
 
-  // service.getMatchedMenuItems(searchTerm){
-  // };
+    var promise = $http({
+      method: "GET",
+      url: (ApiBasePath + "/menu_items.json")
+    });
+    
+    
+
+    promise.then(function (response) {
+
+      var responseData = response.data;
+      var foundItems= [];
+      
+      for(var i = 0; i < responseData.menu_items.length; i++){
+
+        var name = responseData.menu_items[i].name;
+        var nameLowerCased = responseData.menu_items[i].name.toLowerCase();
+        var searchTermLowerCased = searchTerm.toLowerCase();
+        
+        if(nameLowerCased.includes(searchTermLowerCased)){
+          foundItems.push(name);
+        }
+      }
+      console.log(foundItems);
+      return foundItems;
+    })
+    .catch(function (error) {
+      console.log("Something went terribly wrong.");
+    });
+    
+  };
 }
 /*
 Declare and create MenuSearchService. The service should have the following method:
@@ -71,3 +91,4 @@ as you understood that code, it should be very close to copy/paste). In the Narr
 simply remove that item from the found array. You can do that using the Array's splice() method.
 For example, to remove an item with the index of 3 from the found array, you would call found.splice(3, 1);.
 */
+})();
