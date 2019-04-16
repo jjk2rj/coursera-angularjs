@@ -4,27 +4,25 @@
 angular.module('NarrowItDownApp', [])
 .controller('NarrowItDownController', NarrowItDownController)
 .service('MenuSearchService', MenuSearchService)
-.constant('ApiBasePath', "https://davids-restaurant.herokuapp.com");
+.constant('ApiBasePath', "https://davids-restaurant.herokuapp.com")
+.directive('foundItems', FoundItemsDirective);
 
-
-NarrowItDownController.$inject = ['MenuSearchService'];
-function NarrowItDownController (MenuSearchService) {
+NarrowItDownController.$inject = ['$q', 'MenuSearchService'];
+function NarrowItDownController ($q, MenuSearchService) {
   var controller = this;
 
-  var promise = MenuSearchService.getMatchedMenuItems("bean");
-
-  // console.log(controller.matchedItemsArray);
-  promise.then(function (response) {
-    console.log(response);
-    controller.resp = response;
-  })
-  .catch(function (error) {
-    console.log("Something went terribly wrong.");
-  });
+  controller.searchTerm = "";
+  
+  controller.getMenuItems = function() {
+     var promise = MenuSearchService.getMatchedMenuItems(controller.searchTerm);
+     promise.then(function (response){
+      controller.foundItems = response;
+     });
+  }
 }
 
-MenuSearchService.$inject = ['$http', 'ApiBasePath'];
-function MenuSearchService($http, ApiBasePath){
+MenuSearchService.$inject = ['$q', '$http', 'ApiBasePath'];
+function MenuSearchService($q, $http, ApiBasePath){
   var service = this;
 
   service.getMatchedMenuItems = function (searchTerm) {
@@ -33,10 +31,7 @@ function MenuSearchService($http, ApiBasePath){
       method: "GET",
       url: (ApiBasePath + "/menu_items.json")
     });
-    
-    
-
-    promise.then(function (response) {
+    return promise.then(function (response) {
 
       var responseData = response.data;
       var foundItems= [];
@@ -47,19 +42,39 @@ function MenuSearchService($http, ApiBasePath){
         var nameLowerCased = responseData.menu_items[i].name.toLowerCase();
         var searchTermLowerCased = searchTerm.toLowerCase();
         
-        if(nameLowerCased.includes(searchTermLowerCased)){
+        if(nameLowerCased.includes(searchTermLowerCased) && !foundItems.includes(name)){
           foundItems.push(name);
         }
       }
-      console.log(foundItems);
+      // console.log(foundItems);
       return foundItems;
     })
     .catch(function (error) {
       console.log("Something went terribly wrong.");
     });
-    
   };
 }
+
+function FoundItemsDirective(){
+  var ddo = {
+    scope: {
+      foundItems: '=',
+      onRemove: '&'
+    },
+    controller: FoundItemsDirectiveController,
+    controllerAs: 'list',
+    bindToController: true,
+    templateUrl: 'foundItems.html'
+  };
+  return ddo;
+}
+
+function FoundItemsDirectiveController(){
+  var list = this; 
+
+  // list.
+}
+
 /*
 Declare and create MenuSearchService. The service should have the following method:
 getMatchedMenuItems(searchTerm). That method will be responsible for reaching out to the server
