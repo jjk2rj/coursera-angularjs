@@ -13,11 +13,21 @@ function NarrowItDownController ($q, MenuSearchService) {
 
   controller.searchTerm = "";
   
+  // delete this after
+  controller.array1 = [1,2,2,3];
+  controller.array2 = ["hi", "hello"];
+  
   controller.getMenuItems = function() {
      var promise = MenuSearchService.getMatchedMenuItems(controller.searchTerm);
      promise.then(function (response){
-      controller.foundItems = response;
+       controller.foundItems = response;
+       console.log(controller.foundItems);
      });
+  }
+
+  controller.removeItem = function (index){
+    console.log("removed: " + controller.foundItems[index]);
+    controller.foundItems.splice(index, 1);
   }
 }
 
@@ -26,7 +36,6 @@ function MenuSearchService($q, $http, ApiBasePath){
   var service = this;
 
   service.getMatchedMenuItems = function (searchTerm) {
-
     var promise = $http({
       method: "GET",
       url: (ApiBasePath + "/menu_items.json")
@@ -43,10 +52,14 @@ function MenuSearchService($q, $http, ApiBasePath){
         var searchTermLowerCased = searchTerm.toLowerCase();
         
         if(nameLowerCased.includes(searchTermLowerCased) && !foundItems.includes(name)){
-          foundItems.push(name);
+          var shortName = responseData.menu_items[i].short_name;
+          var description = responseData.menu_items[i].description;
+          var obj = { name: name,
+            shortName: shortName,
+            description: description };
+          foundItems.push(obj);
         }
       }
-      // console.log(foundItems);
       return foundItems;
     })
     .catch(function (error) {
@@ -58,22 +71,22 @@ function MenuSearchService($q, $http, ApiBasePath){
 function FoundItemsDirective(){
   var ddo = {
     scope: {
-      foundItems: '=',
-      onRemove: '&'
+      items: '=',
+      removeItem: '&'
     },
-    controller: FoundItemsDirectiveController,
-    controllerAs: 'list',
+    controller: NarrowItDownController,
+    controllerAs: 'controller',
     bindToController: true,
     templateUrl: 'foundItems.html'
   };
   return ddo;
 }
 
-function FoundItemsDirectiveController(){
-  var list = this; 
+// function FoundItemsDirectiveController(){
+//   var list = this; 
 
-  // list.
-}
+//   // list.
+// }
 
 /*
 Declare and create MenuSearchService. The service should have the following method:

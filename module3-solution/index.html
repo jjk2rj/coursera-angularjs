@@ -19,18 +19,23 @@
     <div class="form-group narrow-button">
       <button class="btn btn-primary" ng-click="controller.getMenuItems();">Narrow It Down For Me!</button>
     </div>
+    <br>
+    <br>
+    <br>
+    <!-- Test  -->
+    <!-- <ol>
+        <li ng-repeat="item in controller.foundItems">
+            {{ item }}
+            <button ng-click="controller.removeItem($index);">Remove Item</button>
+        </li>
+    </ol> -->
 
-    <div>
-        <ol>
-            <li ng-repeat="item in controller.foundItems">
-              {{ item }}
-              <!-- <button ng-click="list.removeItem($index);">Remove Item</button> -->
-            </li>
-          </ol>
-    </div>
     <!-- found-items should be implemented as a component -->
     <!-- <found-items found-items="...." on-remove="...."></found-items> -->
-    <found-items></found-items>
+    <found-items
+      items="controller.foundItems" 
+      remove-item="controller.removeItem(index)"
+      ></found-items>
   </div>
 
 </body>

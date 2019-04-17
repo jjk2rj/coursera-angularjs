@@ -1,7 +1,7 @@
-<h3>Found Items</h3>
-<ol>
-    <li ng-repeat="item in list.foundItems">
-        {{ item }}
-        <button ng-click="list.onRemove({index: $index});">Remove Item</button>
+<ol ng-if="controller.items.length!=219">
+    <li ng-repeat="item in controller.items">
+        {{item.shortName }}: {{ item.name }} - {{item.description}} 
+        <button ng-click="controller.removeItem({index: $index});">Don't want this one!</button>
     </li>
 </ol>
+<div ng-if="controller.items==false || controller.items.length==219"> Nothing found </div>
