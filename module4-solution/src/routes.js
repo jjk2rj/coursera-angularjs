@@ -14,6 +14,8 @@ function RoutesConfig($stateProvider, $urlRouterProvider) {
     url: '/',
     templateUrl: 'src/menuapp/templates/home.template.html'
   })
+
+  // Category list State with Resolve + promise
   .state('categoryList', {
     url: '/category-list',
     templateUrl: 'src/menuapp/templates/category-list.template.html',
@@ -24,6 +26,8 @@ function RoutesConfig($stateProvider, $urlRouterProvider) {
       }]
     }
   })
+
+  // Items statewith resolve and promise
   .state('items', {
     url: '/items/{category}',
     templateUrl: 'src/menuapp/templates/items.template.html',
@@ -34,8 +38,6 @@ function RoutesConfig($stateProvider, $urlRouterProvider) {
       }]
     }
   });
-
-
 }
 
 })();
