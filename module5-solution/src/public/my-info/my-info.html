@@ -1,0 +1,30 @@
+<div class="container">
+  
+  <div ng-if="myInfoCtrl.userInfo === undefined" id="user-info-not-signed-msg"> 
+    Not Signed Up Yet. Sign up Now!
+  </div>
+
+  <table id="user-info-table" ng-if="myInfoCtrl.userInfo != undefined" class="table table-borderless">
+    <tr>
+      <td>First Name: </td>
+      <td>{{myInfoCtrl.userInfo.firstName}}</td>
+    </tr>
+    <tr>
+      <td>Last Name: </td>
+      <td>{{myInfoCtrl.userInfo.lastName}}</td>
+    </tr>
+    <tr>
+      <td>Email Address: </td>
+      <td>{{myInfoCtrl.userInfo.email}}</td>
+    </tr>
+    <tr>
+      <td>Phone number: </td>
+      <td>{{myInfoCtrl.userInfo.phone}}</td>
+    </tr>
+    <tr>
+      <td>Favorite Dish: </td>
+      <td><menu-item id="user-info-menu-item" menu-item="myInfoCtrl.userInfo.favoriteMenuItem"></menu-item></td>
+    </tr>
+  </table>
+
+</div>
